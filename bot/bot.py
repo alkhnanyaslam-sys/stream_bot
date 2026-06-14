@@ -8,27 +8,45 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 BOT_TOKEN = os.environ.get("BOT_TOKEN")
-STREAM_URL = os.environ.get("STREAM_URL")
-OUTPUT_URL = os.environ.get("OUTPUT_URL")
 
 bot = telebot.TeleBot(BOT_TOKEN)
 
-process = None
-stop_flag = False
+stop_all = False
+processes = []
 
 
-def run_stream():
-    global process, stop_flag
+# =========================
+# 🎯 قائمة القنوات
+# =========================
+CHANNELS = [
+    {
+        "name": "channel1",
+        "input": os.environ.get("STREAM_URL_1"),
+        "output": os.environ.get("OUTPUT_URL_1")
+    },
+    {
+        "name": "channel2",
+        "input": os.environ.get("STREAM_URL_2"),
+        "output": os.environ.get("OUTPUT_URL_2")
+    }
+]
 
-    while not stop_flag:
+
+# =========================
+# ▶️ تشغيل قناة واحدة
+# =========================
+def run_stream(channel):
+    global stop_all
+
+    while not stop_all:
         try:
-            logging.info("🎬 Starting stream...")
+            logging.info(f"🎬 Starting {channel['name']}")
 
             cmd = [
                 "ffmpeg",
                 "-re",
                 "-stream_loop", "-1",
-                "-i", STREAM_URL,
+                "-i", channel["input"],
 
                 "-c:v", "copy",
                 "-c:a", "aac",
@@ -36,43 +54,75 @@ def run_stream():
                 "-ar", "44100",
 
                 "-f", "flv",
-                OUTPUT_URL
+                channel["output"]
             ]
 
             process = subprocess.Popen(cmd)
+            processes.append(process)
+
             process.wait()
 
-            logging.warning("⚠️ Restarting stream in 5 sec...")
+            logging.warning(f"⚠️ {channel['name']} crashed, restarting...")
             time.sleep(5)
 
         except Exception as e:
-            logging.error(f"Error: {e}")
+            logging.error(f"{channel['name']} error: {e}")
             time.sleep(5)
 
 
+# =========================
+# ▶️ تشغيل كل القنوات
+# =========================
+def start_all():
+    threads = []
+
+    for ch in CHANNELS:
+        if not ch["input"] or not ch["output"]:
+            continue
+
+        t = threading.Thread(target=run_stream, args=(ch,))
+        t.start()
+        threads.append(t)
+
+    return threads
+
+
+# =========================
+# 🤖 أوامر البوت
+# =========================
 @bot.message_handler(commands=['start'])
 def start(msg):
-    bot.reply_to(msg, "📡 Bot is running")
+    bot.reply_to(msg, "📡 Bot Ready")
 
 @bot.message_handler(commands=['stream'])
 def stream(msg):
-    global stop_flag
-    stop_flag = False
+    global stop_all
 
-    threading.Thread(target=run_stream).start()
+    stop_all = False
 
-    bot.reply_to(msg, "🚀 Stream started")
+    start_all()
+
+    bot.reply_to(msg, "🚀 All streams started")
 
 @bot.message_handler(commands=['stop'])
 def stop(msg):
-    global stop_flag, process
+    global stop_all, processes
 
-    stop_flag = True
+    stop_all = True
 
-    if process:
-        process.terminate()
-        process = None
+    for p in processes:
+        try:
+            p.terminate()
+        except:
+            pass
 
-    bot.reply_to(msg, "⛔ Stream stopped")
+    processes = []
 
+    bot.reply_to(msg, "⛔ All streams stopped")
+
+@bot.message_handler(commands=['status'])
+def status(msg):
+    bot.reply_to(msg, f"📊 Running channels: {len(CHANNELS)}")
+
+# =========================
 bot.polling(none_stop=True)
