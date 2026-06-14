@@ -5,7 +5,7 @@ import subprocess
 import threading
 import time
 
-BOT_TOKEN = os.environ.get("BOT_TOKEN")
+BOT_TOKEN = os.environ.get("8693405952:AAHujnBuvnf3Kgmk_PnFd6cWPyjI2UoeuyM")
 bot = telebot.TeleBot(BOT_TOKEN)
 
 DATA_FILE = "/tmp/stream_data.json"
