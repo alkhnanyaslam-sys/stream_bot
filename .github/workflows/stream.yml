@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  bot:
+  stream:
     runs-on: ubuntu-latest
     timeout-minutes: 118
 
@@ -28,9 +28,19 @@ jobs:
       - name: 📦 مكتبات
         run: pip install pyTelegramBotAPI==4.18.0
 
+      - name: ✅ تحقق من الـ Secrets
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+        run: |
+          if [ -z "$BOT_TOKEN" ]; then
+            echo "❌ BOT_TOKEN فاضي!"
+            exit 1
+          fi
+          echo "✅ BOT_TOKEN موجود"
+
       - name: 🤖 تشغيل البوت
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
           cd bot
-          python bot.py
+          python bot.py  
