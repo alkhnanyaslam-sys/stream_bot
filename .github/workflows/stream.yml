@@ -17,7 +17,7 @@ jobs:
       - name: 🔧 تثبيت ffmpeg
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg wget
+          sudo apt-get install -y ffmpeg
           ffmpeg -version | head -1
 
       - name: 🐍 Python
@@ -28,19 +28,10 @@ jobs:
       - name: 📦 مكتبات
         run: pip install pyTelegramBotAPI==4.18.0
 
-      - name: ✅ تحقق من الـ Secrets
-        env:
-          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-        run: |
-          if [ -z "$BOT_TOKEN" ]; then
-            echo "❌ BOT_TOKEN فاضي!"
-            exit 1
-          fi
-          echo "✅ BOT_TOKEN موجود"
-
       - name: 🤖 تشغيل البوت
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
         run: |
+          echo "✅ BOT_TOKEN موجود: ${#BOT_TOKEN} حرف"
           cd bot
-          python bot.py  
+          python bot.py
