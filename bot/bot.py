@@ -40,8 +40,8 @@ STATIONS = {
         "name": "📻 إذاعة القرآن الكريم - القاهرة",
         "urls": [
             "http://live.mp3quran.net:9722/",
-            "http://live.mp3quran.net:9718/",
-            "http://live.mp3quran.net:9714/",
+            "http://live.mp3quran.net:8006/",
+            "http://live.mp3quran.net:9988/",
         ],
         "type": "audio",
     },
