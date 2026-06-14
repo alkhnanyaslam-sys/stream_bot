@@ -10,9 +10,10 @@ STATIONS = {
         "backup": "https://cdn-streams.tv/haramain/madinah/hd/index.m3u8",
     },
     "3": {
-        "name": "📻 إذاعة القرآن الكريم - القاهرة",
-        "url": "http://stream.radiotime.com/listen.stream?streamid=3538",
-        "backup": "http://live.mp3quran.net:9722/",
+    "name": "📻 إذاعة القرآن الكريم - القاهرة",
+    "url": "http://live.mp3quran.net:9722/",
+    "backup": "http://live.mp3quran.net:9718/",
+},
     },
 }
 
