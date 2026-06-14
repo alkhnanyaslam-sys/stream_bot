@@ -8,7 +8,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
 
-BOT_TOKEN = os.environ.get("8693405952:AAHujnBuvnf3Kgmk_PnFd6cWPyjI2UoeuyM", "").strip()
+BOT_TOKEN = os.environ.get("(BOT_TOKEN)", "").strip()
 
 if not BOT_TOKEN:
     raise Exception("BOT_TOKEN مش موجود!")
