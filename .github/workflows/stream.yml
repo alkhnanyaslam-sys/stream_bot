@@ -1,9 +1,9 @@
-name: 📡 Quran Live Stream Bot
+name: 📡 Quran Multi Stream Bot
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *'   # بدل كل ساعتين عشان تقلل إعادة التشغيل
+    - cron: '0 */6 * * *'
 
 jobs:
   stream:
@@ -14,26 +14,24 @@ jobs:
       - name: 📥 Checkout
         uses: actions/checkout@v4
 
-      - name: 🔧 تثبيت ffmpeg
+      - name: 🔧 Install ffmpeg
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y ffmpeg
-          ffmpeg -version | head -1
 
-      - name: 🐍 إعداد Python
+      - name: 🐍 Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      - name: 📦 تثبيت المكتبات
-        run: |
-          pip install pyTelegramBotAPI==4.18.0
+      - name: 📦 Install deps
+        run: pip install pyTelegramBotAPI==4.18.0
 
-      - name: 🤖 تشغيل البوت
+      - name: 🤖 Run bot
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          OUTPUT_URL: ${{ secrets.OUTPUT_URL }}
-          STREAM_URL: ${{ secrets.STREAM_URL }}
-        run: |
-          echo "🚀 Starting bot..."
-          python bot.py
+          STREAM_URL_1: ${{ secrets.STREAM_URL_1 }}
+          OUTPUT_URL_1: ${{ secrets.OUTPUT_URL_1 }}
+          STREAM_URL_2: ${{ secrets.STREAM_URL_2 }}
+          OUTPUT_URL_2: ${{ secrets.OUTPUT_URL_2 }}
+        run: python bot.py
