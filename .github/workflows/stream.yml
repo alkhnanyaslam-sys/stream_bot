@@ -1,14 +1,14 @@
 name: 📡 Quran Live Stream Bot
 
 on:
-  schedule:
-    - cron: '0 */2 * * *'
   workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'   # بدل كل ساعتين عشان تقلل إعادة التشغيل
 
 jobs:
   stream:
     runs-on: ubuntu-latest
-    timeout-minutes: 118
+    timeout-minutes: 110
 
     steps:
       - name: 📥 Checkout
@@ -20,18 +20,20 @@ jobs:
           sudo apt-get install -y ffmpeg
           ffmpeg -version | head -1
 
-      - name: 🐍 Python
+      - name: 🐍 إعداد Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      - name: 📦 مكتبات
-        run: pip install pyTelegramBotAPI==4.18.0
+      - name: 📦 تثبيت المكتبات
+        run: |
+          pip install pyTelegramBotAPI==4.18.0
 
       - name: 🤖 تشغيل البوت
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          OUTPUT_URL: ${{ secrets.OUTPUT_URL }}
+          STREAM_URL: ${{ secrets.STREAM_URL }}
         run: |
-          echo "✅ BOT_TOKEN موجود: ${#BOT_TOKEN} حرف"
-          cd bot
+          echo "🚀 Starting bot..."
           python bot.py
