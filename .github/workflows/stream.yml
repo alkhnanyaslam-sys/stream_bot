@@ -1,12 +1,12 @@
-name: 📡 Quran Radio 24/7
+name: 📡 Quran Live Stream Bot
 
 on:
   schedule:
-    - cron: '0 */2 * * *'   # كل ساعتين تلقائياً
-  workflow_dispatch:          # تشغيل يدوي
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
 
 jobs:
-  stream:
+  bot:
     runs-on: ubuntu-latest
     timeout-minutes: 118
 
@@ -17,41 +17,20 @@ jobs:
       - name: 🔧 تثبيت ffmpeg
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y ffmpeg wget
           ffmpeg -version | head -1
 
-      - name: 🐍 تثبيت Python
+      - name: 🐍 Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.11"
 
-      - name: 📦 تثبيت المكتبات
-        run: pip install -r requirements.txt
+      - name: 📦 مكتبات
+        run: pip install pyTelegramBotAPI==4.18.0
 
-      - name: 📡 تشغيل البث مع Bot
+      - name: 🤖 تشغيل البوت
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
-          RTMP_URL: ${{ secrets.RTMP_URL }}
-          STREAM_KEY: ${{ secrets.STREAM_KEY }}
-          ADMIN_IDS: ${{ secrets.ADMIN_IDS }}
         run: |
-          chmod +x streamer/stream.sh
-          
-          # شغّل البوت في الخلفية
           cd bot
-          python bot.py &
-          BOT_PID=$!
-          echo "Bot PID: $BOT_PID"
-          
-          # شغّل السكريبت الرئيسي
-          cd ..
-          bash streamer/stream.sh
-          
-          # أوقف البوت
-          kill $BOT_PID 2>/dev/null || true
-
-      - name: 📊 تقرير نهاية البث
-        if: always()
-        run: |
-          echo "انتهت جلسة البث في: $(date)"
-          echo "سيتجدد تلقائياً خلال دقائق"
+          python bot.py
